@@ -32,8 +32,6 @@ class ConferenceController extends AbstractController
     }
 
     #[Route('/conference/{slug}', name: 'conference')]
-    //public function show(Request $request, Conference $conference, CommentRepository $commentRepository): Response
-    //{
     public function show(
         Request $request,
         Conference $conference,
