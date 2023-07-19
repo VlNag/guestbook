@@ -10,6 +10,7 @@ use Twig\Environment;
 
 class TwigEventSubscriber implements EventSubscriberInterface
 {
+
     private $twig;
     private $conferenceRepository;
 
@@ -30,4 +31,5 @@ class TwigEventSubscriber implements EventSubscriberInterface
             KernelEvents::CONTROLLER => 'onKernelController',
         ];
     }
+
 }
