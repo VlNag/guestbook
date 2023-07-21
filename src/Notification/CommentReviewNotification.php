@@ -23,6 +23,7 @@ class CommentReviewNotification extends Notification implements EmailNotificatio
 {
     public function __construct(
         private Comment $comment,
+        private string $reviewUrl,
     ) {
         parent::__construct('New comment posted');
     }
@@ -46,7 +47,9 @@ class CommentReviewNotification extends Notification implements EmailNotificatio
         }
 
         $message = ChatMessage::fromNotification($this, $recipient, $transport);
-        $message->subject($this->getSubject());
+        $message->subject($this->getSubject()."\r\n".sprintf('%s (%s) says: %s',
+                    $this->comment->getAuthor(), $this->comment->getEmail(), $this->comment->getText()));
+
         $message->options((new TelegramOptions())
             ->chatId('@symfony_test')
             ->parseMode('MarkdownV2')
@@ -54,12 +57,13 @@ class CommentReviewNotification extends Notification implements EmailNotificatio
             ->disableNotification(true)
             ->replyMarkup((new InlineKeyboardMarkup())
                 ->inlineKeyboard([
-                    (new InlineKeyboardButton('Visit symfony.com'))
-                        ->url('https://symfony.com/'),
-                ]))
-
-
-        /*    ->iconEmoji('tada')
+                    (new InlineKeyboardButton('Accept'))
+                        ->url($this->reviewUrl),
+                    (new InlineKeyboardButton('Reject'))
+                        ->url($this->reviewUrl.'?reject=1'),
+                    ])
+            )
+        /*  ->iconEmoji('tada')
             ->iconUrl('https://guestbook.example.com')
             ->username('Guestbook')
             ->block((new SlackSectionBlock())->text($this->getSubject()))
